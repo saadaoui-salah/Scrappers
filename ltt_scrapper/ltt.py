@@ -34,15 +34,29 @@ class LttrScrapper():
                 new_project['statusColor'] = project.get("serializable").get('statusColor') 
                 course_data["projects"].append(new_project)
             self.data.append(course_data)
+            break
 
     def get_detail_description(self):
-        print(self.data)
         for course in self.data :
             response = requests.get(course["detailsURL"])
             html  = BeautifulSoup(response.text, 'html.parser')
             table = html.find_all('table')[1]
+            details = {}
             for tr in table.find_all('tr'):
-                print(tr)
+                if len(tr.find_all('td')) == 2 :
+                    all_td =  tr.find_all('td')
+                    key = all_td[0].text.replace(":","").replace(" ","")
+                    value = all_td[1].text
+                    if key == "\xa0":
+                        continue
+                    details[key] = value 
+            try:
+                details['revision'] = table.find("font", string="Revision Id").text.replace("( Revision Id: ","").replace(")","")
+            except Exception:
+                pass
+            details['LTT-ID'] =  html.find_all("font", string="LTT-ID")[0].span.text
+            print(details['revision'])
+            print(details['LTT-ID'])
 
 
     def send_request(zip_, lastName, country, occupation, city, privacyPolicy, sendNews, firstName, places, phone, taxId, street, company, comment, captcha, salutation, courseId, projectId, email, title):
