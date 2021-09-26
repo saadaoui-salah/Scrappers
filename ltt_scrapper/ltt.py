@@ -144,6 +144,7 @@ class LttrScrapper():
 
 def get_data(keyword=None, filter_id=None):
     scrapper = LttrScrapper(keyword, filter_id)
+    print(scrapper.feed())
     return scrapper.feed()
 
 def send_request(zip_, lastName, country, occupation, city, courseID, privacyPolicy, sendNews, firstName, places, phone, taxId, street, company, comment, captcha, salutation, projectId, email, title):
