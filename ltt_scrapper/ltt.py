@@ -94,6 +94,10 @@ class LttrScrapper():
         self.get_detail_description()
         return self.data
 
+    def get_captcha_url(self, courseId, title):
+        title = title.replace(" ","_").replace("[","_").replace("]","_").replace("&","_")
+        return f"https://www.ltt.aero/training-finder?p_p_id=TrainingFinder_WAR_trainingfinderportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-1&p_p_col_pos=2&p_p_col_count=3&_TrainingFinder_WAR_trainingfinderportlet_action=getCaptcha&_TrainingFinder_WAR_trainingfinderportlet_action=doSearch&_TrainingFinder_WAR_trainingfinderportlet_title={title}&_TrainingFinder_WAR_trainingfinderportlet_courseId={courseId}&_TrainingFinder_WAR_trainingfinderportlet_revision=0&t=1632685508356" 
+        
     def send_request(self, zip_, lastName, country, occupation, city, courseID, privacyPolicy, sendNews, firstName, places, phone, taxId, street, company, comment, captcha, salutation, email, title):
         if salutation != "Mr." and salutation != "Ms." :
             """
@@ -149,7 +153,7 @@ class LttrScrapper():
         request_url = f"https://www.ltt.aero/training-finder?p_p_id=TrainingFinder_WAR_trainingfinderportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-1&p_p_col_pos=2&p_p_col_count=3&_TrainingFinder_WAR_trainingfinderportlet_zip={zip_}_TrainingFinder_WAR_trainingfinderportlet_lastName={lastName}&_TrainingFinder_WAR_trainingfinderportlet_country={country}&_TrainingFinder_WAR_trainingfinderportlet_occupation={occupation}&_TrainingFinder_WAR_trainingfinderportlet_city={city}&_TrainingFinder_WAR_trainingfinderportlet_privacyPolicy={privacyPolicy}&_TrainingFinder_WAR_trainingfinderportlet_sendNews={sendNews}&_TrainingFinder_WAR_trainingfinderportlet_type=INHOUSE&_TrainingFinder_WAR_trainingfinderportlet_firstName={firstName}&_TrainingFinder_WAR_trainingfinderportlet_customerType=FIRM&_TrainingFinder_WAR_trainingfinderportlet_places={places}&_TrainingFinder_WAR_trainingfinderportlet_phone={phone}&_TrainingFinder_WAR_trainingfinderportlet_taxId={taxId}&_TrainingFinder_WAR_trainingfinderportlet_street={street}&_TrainingFinder_WAR_trainingfinderportlet_action=doBooking&_TrainingFinder_WAR_trainingfinderportlet_action=doSearch&_TrainingFinder_WAR_trainingfinderportlet_company={company}&_TrainingFinder_WAR_trainingfinderportlet_comment={comment}&_TrainingFinder_WAR_trainingfinderportlet_captchaText={captcha}&_TrainingFinder_WAR_trainingfinderportlet_salutation={salutation}&_TrainingFinder_WAR_trainingfinderportlet_courseId={courseID}&_TrainingFinder_WAR_trainingfinderportlet_courseId={courseID}&_TrainingFinder_WAR_trainingfinderportlet_projectId=&_TrainingFinder_WAR_trainingfinderportlet_email={email}&_TrainingFinder_WAR_trainingfinderportlet_title={title}&_TrainingFinder_WAR_trainingfinderportlet_revision=0"
         r = requests.post(request_url)
         return r
-
+    
 
 def get_data(keyword=None, filter_id=None):
     scrapper = LttrScrapper(keyword, filter_id)
