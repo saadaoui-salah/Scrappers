@@ -93,9 +93,12 @@ class LttrScrapper():
         self.get_available_data()
         self.get_detail_description()
         return self.data
+        
+    def clean_title(self, title):
+        return title.replace(" ","_").replace("[","_").replace("]","_").replace("&","_").replace("(","_").replace(")","_")
+
 
     def get_captcha_url(self, courseId, title):
-        title = title.replace(" ","_").replace("[","_").replace("]","_").replace("&","_")
         return f"https://www.ltt.aero/training-finder?p_p_id=TrainingFinder_WAR_trainingfinderportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-1&p_p_col_pos=2&p_p_col_count=3&_TrainingFinder_WAR_trainingfinderportlet_action=getCaptcha&_TrainingFinder_WAR_trainingfinderportlet_action=doSearch&_TrainingFinder_WAR_trainingfinderportlet_title={title}&_TrainingFinder_WAR_trainingfinderportlet_courseId={courseId}&_TrainingFinder_WAR_trainingfinderportlet_revision=0&t=1632685508356" 
         
     def send_request(self, zip_, lastName, country, occupation, city, courseID, privacyPolicy, sendNews, firstName, places, phone, taxId, street, company, comment, captcha, salutation, email, title):
