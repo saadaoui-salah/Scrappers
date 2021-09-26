@@ -4,39 +4,44 @@ from bs4 import BeautifulSoup
 
 
 class LttrScrapper():
-    def __init__(self, keyword=None, filter_id=None):
-        url = "https://www.ltt.aero/training-finder"
-        params = {
-            "p_p_id": "TrainingFinder_WAR_trainingfinderportlet",
-            "p_p_lifecycle": 2,
-            "p_p_state": "normal",
-            "p_p_mode": "view",
-            "p_p_cacheability": "cacheLevelPage",
-            "p_p_col_id": "column-1",
-            "p_p_col_pos": 2,
-            "p_p_col_count": 3,
-            "_TrainingFinder_WAR_trainingfinderportlet_action": "doSearch",
-            "_TrainingFinder_WAR_trainingfinderportlet_sortCondition": "date",
-            "_TrainingFinder_WAR_trainingfinderportlet_sortDirection": "asc",
-            "_TrainingFinder_WAR_trainingfinderportlet_limit": 1,
-            "_TrainingFinder_WAR_trainingfinderportlet_offset": 0,
-            "_": 1632675832234
-        }
-        if filter_id:
-            params["_TrainingFinder_WAR_trainingfinderportlet_facets"] = FILTERS[filter_id]
-        if keyword:
-            params["_TrainingFinder_WAR_trainingfinderportlet_text"] = keyword
-        params["_TrainingFinder_WAR_trainingfinderportlet_limit"] = requests.get(url, params=params).json()["total"]
-        print(f"...Found {params['_TrainingFinder_WAR_trainingfinderportlet_limit']} results")
-        print(f"Getting data from {url}")
-        self.response = requests.get(url, params=params).json()
-        self.data = []
+    def __init__(self, keyword=None, filter_id=None, scraper=True):
+        if scraper:
+            url = "https://www.ltt.aero/training-finder"
+            params = {
+                "p_p_id": "TrainingFinder_WAR_trainingfinderportlet",
+                "p_p_lifecycle": 2,
+                "p_p_state": "normal",
+                "p_p_mode": "view",
+                "p_p_cacheability": "cacheLevelPage",
+                "p_p_col_id": "column-1",
+                "p_p_col_pos": 2,
+                "p_p_col_count": 3,
+                "_TrainingFinder_WAR_trainingfinderportlet_action": "doSearch",
+                "_TrainingFinder_WAR_trainingfinderportlet_sortCondition": "date",
+                "_TrainingFinder_WAR_trainingfinderportlet_sortDirection": "asc",
+                "_TrainingFinder_WAR_trainingfinderportlet_limit": 1,
+                "_TrainingFinder_WAR_trainingfinderportlet_offset": 0,
+                "_": 1632675832234
+            }
+            if filter_id:
+                params["_TrainingFinder_WAR_trainingfinderportlet_facets"] = FILTERS[filter_id]
+            if keyword:
+                params["_TrainingFinder_WAR_trainingfinderportlet_text"] = keyword
+            params["_TrainingFinder_WAR_trainingfinderportlet_limit"] = requests.get(url, params=params).json()["total"]
+            print(f"Found {params['_TrainingFinder_WAR_trainingfinderportlet_limit']} results")
+            print(f"Getting data from {url}")
+            self.response = requests.get(url, params=params).json()
+            self.data = []
 
     def get_available_data(self):
+        print("Start scrapping availible data...")
         for course in self.response["courseResults"]['list']:
             course_data = {}
             course_data['courseId'] = course.get("serializable").get('courseId')
             course_data['title'] = course.get("serializable").get('title')
+            print(f"\tTitle:\t{course_data['title']}")
+            print(f"\tCourse ID:\t{course_data['courseId']}")
+            print("\t...more")
             course_data['description'] = course.get("serializable").get('metaDescription') 
             course_data['duration'] = course.get("serializable").get('duration') 
             course_data['maxParticipants'] = str(course.get("serializable").get('maxParticipants')) 
@@ -64,7 +69,8 @@ class LttrScrapper():
 
     def get_detail_description(self):
         for course in self.data :
-            print(course["detailsURL"])
+            print(f"Getting more details from: {course['detailsURL']}")
+            print(f"Details related to : {course['title']}")
             response = requests.get(course["detailsURL"])
             html  = BeautifulSoup(response.text, 'html.parser')
             self.table = html.find_all('table')[1]
@@ -79,6 +85,8 @@ class LttrScrapper():
                     details[key] = value 
             details['revision'] = self.get_revision_id()
             details['LTT-ID'] = html.find_all("p",{"class":"tf-ltt-id"})[0].span.text
+            print(f"\tLTT-ID:\t{details['LTT-ID']}")
+            print(f"\tRevision ID:\t{details['revision']}")
             course["details"] = details
 
     def feed(self):
@@ -86,8 +94,8 @@ class LttrScrapper():
         self.get_detail_description()
         return self.data
 
-    def send_request(self, zip_, lastName, country, occupation, city, courseID, privacyPolicy, sendNews, firstName, places, phone, taxId, street, company, comment, captcha, salutation, projectId, email, title):
-        if salutation != "Mr." or salutation != "Ms." :
+    def send_request(self, zip_, lastName, country, occupation, city, courseID, privacyPolicy, sendNews, firstName, places, phone, taxId, street, company, comment, captcha, salutation, email, title):
+        if salutation != "Mr." and salutation != "Ms." :
             """
             salutation is a select ipnut
             """
@@ -136,18 +144,33 @@ class LttrScrapper():
             "_TrainingFinder_WAR_trainingfinderportlet_projectId": "",
             "_TrainingFinder_WAR_trainingfinderportlet_email": email,
             "_TrainingFinder_WAR_trainingfinderportlet_title": title,
-            "_TrainingFinder_WAR_trainingfinderportlet_revision": 0,
+            "_TrainingFinder_WAR_trainingfinderportlet_revision": "0",
         }
-        request_url = "https://www.ltt.aero/training-finder"
-        requests.post(request_url, params=params)
+        request_url = f"https://www.ltt.aero/training-finder?p_p_id=TrainingFinder_WAR_trainingfinderportlet&p_p_lifecycle=2&p_p_state=normal&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-1&p_p_col_pos=2&p_p_col_count=3&_TrainingFinder_WAR_trainingfinderportlet_zip={zip_}_TrainingFinder_WAR_trainingfinderportlet_lastName={lastName}&_TrainingFinder_WAR_trainingfinderportlet_country={country}&_TrainingFinder_WAR_trainingfinderportlet_occupation={occupation}&_TrainingFinder_WAR_trainingfinderportlet_city={city}&_TrainingFinder_WAR_trainingfinderportlet_privacyPolicy={privacyPolicy}&_TrainingFinder_WAR_trainingfinderportlet_sendNews={sendNews}&_TrainingFinder_WAR_trainingfinderportlet_type=INHOUSE&_TrainingFinder_WAR_trainingfinderportlet_firstName={firstName}&_TrainingFinder_WAR_trainingfinderportlet_customerType=FIRM&_TrainingFinder_WAR_trainingfinderportlet_places={places}&_TrainingFinder_WAR_trainingfinderportlet_phone={phone}&_TrainingFinder_WAR_trainingfinderportlet_taxId={taxId}&_TrainingFinder_WAR_trainingfinderportlet_street={street}&_TrainingFinder_WAR_trainingfinderportlet_action=doBooking&_TrainingFinder_WAR_trainingfinderportlet_action=doSearch&_TrainingFinder_WAR_trainingfinderportlet_company={company}&_TrainingFinder_WAR_trainingfinderportlet_comment={comment}&_TrainingFinder_WAR_trainingfinderportlet_captchaText={captcha}&_TrainingFinder_WAR_trainingfinderportlet_salutation={salutation}&_TrainingFinder_WAR_trainingfinderportlet_courseId={courseID}&_TrainingFinder_WAR_trainingfinderportlet_courseId={courseID}&_TrainingFinder_WAR_trainingfinderportlet_projectId=&_TrainingFinder_WAR_trainingfinderportlet_email={email}&_TrainingFinder_WAR_trainingfinderportlet_title={title}&_TrainingFinder_WAR_trainingfinderportlet_revision=0"
+        r = requests.post(request_url)
+        return r
 
 
 def get_data(keyword=None, filter_id=None):
     scrapper = LttrScrapper(keyword, filter_id)
-    print(scrapper.feed())
+    print("All data scrapped:")
+    print(f"\t{scrapper.feed()}")
     return scrapper.feed()
 
-def send_request(zip_, lastName, country, occupation, city, courseID, privacyPolicy, sendNews, firstName, places, phone, taxId, street, company, comment, captcha, salutation, projectId, email, title):
-    scrapper = LttrScrapper()
-    scrapper.send_request(zip_, lastName, country, occupation, city, courseID, privacyPolicy, sendNews, firstName, places, phone, taxId, street, company, comment, captcha, salutation, projectId, email, title)
+def send_request(zip_, lastName, country, occupation, city, courseID, privacyPolicy, sendNews, firstName, places, phone, taxId, street, company, comment, captcha, salutation, email, title):
+    scrapper = LttrScrapper(scraper=False)
+    print("Sending data to the server")
+    print("Waiting for response ...")
+    response = scrapper.send_request(zip_, lastName, country, occupation, city, courseID, privacyPolicy, sendNews, firstName, places, phone, taxId, street, company, comment, captcha, salutation, email, title)
+    resppnse_data = response.json()
+    if ['success'] == True:
+        print("Data sended successfully")
+        print(f"\tResponse: {resppnse_data}")
+        print(f"\tStatus Code: {response.status_code}")
+        return True
+    print("Error accured in the server")
+    print(f"\tStatus Code: {response.status_code}")
+    print(f"\tResponse: {resppnse_data}")
+    return False
+
 
