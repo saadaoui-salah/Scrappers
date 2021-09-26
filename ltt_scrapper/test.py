@@ -1,4 +1,4 @@
-from ltt import send_request, get_data 
+from ltt import send_request, get_data, get_captcha_url 
 
 ##############################
 #   GET DATA TEST
@@ -34,3 +34,8 @@ send_request(
 ##############################
 #   GENRATE CAPTCHA URL
 ##############################
+
+get_captcha_url(
+    courseId="AAEP3E20A-02",
+    title="_AAEP3E20A__-_Airbus_A300-600__PW_4000__vs_Airbus_A300-600__any_Engine__EASA_Part-66_B1___B2_Practical"
+)
