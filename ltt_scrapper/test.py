@@ -29,3 +29,8 @@ send_request(
     email="somelhfslfkh@gmail.com",
     title="_AAEP3E20A__-_Airbus_A300-600__PW_4000__vs_Airbus_A300-600__any_Engine__EASA_Part-66_B1___B2_Practical"
      )
+
+
+##############################
+#   GENRATE CAPTCHA URL
+##############################
