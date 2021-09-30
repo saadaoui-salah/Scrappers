@@ -35,4 +35,4 @@ jobs:
 
       - name: start scrapper
         run: |
-          python3 manage.py scraper.py
+          python3 scraper.py
