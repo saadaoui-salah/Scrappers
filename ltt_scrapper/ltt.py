@@ -73,7 +73,13 @@ class LttrScrapper():
             print(f"Details related to : {course['title']}")
             response = requests.get(course["detailsURL"])
             html  = BeautifulSoup(response.text, 'html.parser')
-            self.table = html.find_all('table')[1]
+            try:
+                self.table = html.find_all('table')[1]
+            except IndexError:
+                try:
+                    self.table = html.find_all('table')[0]
+                except IndexError:
+                    return
             details = {}
             for tr in self.table.find_all('tr'):
                 if len(tr.find_all('td')) == 2 :
