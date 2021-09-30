@@ -9,10 +9,7 @@ defaults:
   run:
     shell: bash
     working-directory: wijhat_scrapper
-# on: 
-#    sechedule: 
-#       cron: '*/15 * * * *'
-
+    
 jobs:
   build:
     runs-on: ubuntu-latest
