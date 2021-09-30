@@ -87,6 +87,7 @@ def create_csv():
     headers = ['title', 'date', 'content', 'image']
     for article, data in articles.items():
         with open(f'{article}.csv', 'w', encoding='UTF8', newline='') as f:
+            print("################################################################")
             writer = csv.DictWriter(f, fieldnames=headers)
             writer.writeheader()
             writer.writerows(data)

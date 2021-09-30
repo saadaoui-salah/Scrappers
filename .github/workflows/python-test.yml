@@ -1,0 +1,38 @@
+name: backend-tests
+
+on:
+  push: 
+    branches:
+      - scrapper
+
+defaults:
+  run:
+    shell: bash
+    working-directory: wijhat_scrapper
+# on: 
+#    sechedule: 
+#       cron: '*/15 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v2
+      
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install bs4
+
+      - name: Lint With Flake8
+        run: |
+          pip install requests
+
+      - name: start scrapper
+        run: |
+          python3 manage.py scraper.py
