@@ -1,4 +1,5 @@
 fitshell
 linkedin_api.py
-ltt_scrapper/env
+exams_scraper/env
 ltt_scrapper/__pycache__
+bot
