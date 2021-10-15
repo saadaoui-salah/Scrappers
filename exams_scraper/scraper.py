@@ -34,10 +34,10 @@ class Scraper():
             self.links.append(data)
 
     def get_questions_links(self):
+        self.questions_links = []
         for link in self.links:
             self.driver.get(link['link'])
             questions_items = self.driver.find_elements_by_xpath('//a[@class="list-group-item essay-list-item"]')
-            self.questions_links = []
             for question in questions_items:
                 self.questions_links.append(question.get_attribute('href'))
         print(len(self.questions_links))
